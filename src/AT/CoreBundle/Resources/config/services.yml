@@ -1,0 +1,15 @@
+parameters:
+    at_core.parser.php_parser.class: AT\CoreBundle\Parser\PHPParser
+    at_core.generator.php_generator.class: AT\CoreBundle\Generator\PHPGenerator
+    at_core.service.node_service.class: AT\CoreBundle\Service\NodeService
+
+services:
+    at_core.parser.php_parser:
+        class: %at_core.parser.php_parser.class%
+        arguments: []
+    at_core.generator.php_generator:
+        class: %at_core.generator.php_generator.class%
+        arguments: []
+    at_core.service.node_service:
+        class: %at_core.service.node_service.class%
+        arguments: []
