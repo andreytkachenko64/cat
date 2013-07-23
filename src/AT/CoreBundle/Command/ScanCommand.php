@@ -64,6 +64,8 @@ class ScanCommand extends ContainerAwareCommand
         $parser = $this->getPHPParser();
         $node = $parser->parseModule(file_get_contents(__FILE__/*'/home/andrey/workspace/cat/src/AT/CoreBundle/Generator/PHPGenerator.php'*/));
 
+        $this->getContainer()->get('at_core.repository.operator_repository');
+
         $text = print_r($this->getNodeService()->storeNode($node), 1);
 
         //$text = $this->getPHPGenerator()->generate($stats);

@@ -15,11 +15,15 @@ use AT\CoreBundle\Entity\OperatorName;
 use AT\CoreBundle\Entity\OperatorParameter;
 use AT\CoreBundle\Entity\OperatorParameterItem;
 use AT\CoreBundle\Entity\Repository\OperatorNameRepository;
+use AT\CoreBundle\Entity\Repository\OperatorParameterItemRepository;
+use AT\CoreBundle\Entity\Repository\OperatorParameterRepository;
+use AT\CoreBundle\Entity\Repository\OperatorRepository;
+use AT\CoreBundle\Entity\Repository\ScalarRepository;
+use AT\CoreBundle\Entity\Repository\StringRepository;
 use AT\CoreBundle\Entity\Scalar;
 use AT\CoreBundle\Entity\String;
 use AT\CoreBundle\Model\Node;
 use AT\CoreBundle\Model\NodeList;
-use Doctrine\ORM\EntityRepository;
 
 /**
  * AT\CoreBundle\Service\NodeService
@@ -36,6 +40,32 @@ class NodeService
      * @var StringRepository
      */
     public $stringRepository;
+
+    /**
+     * @var OperatorRepository
+     */
+    public $operatorRepository;
+
+    /**
+     * @var OperatorParameterItemRepository
+     */
+    public $operatorParameterItemRepository;
+
+    public function __construct(OperatorRepository $operatorRepository,
+                                OperatorNameRepository $operatorNameRepository,
+                                OperatorParameterRepository $operatorParameterRepository,
+                                OperatorParameterItemRepository $operatorParameterItemRepository,
+                                StringRepository $stringRepository,
+                                ScalarRepository $scalarRepository)
+    {
+        $this->operatorRepository = $operatorRepository;
+        $this->operatorNameRepository = $operatorNameRepository;
+        $this->stringRepository = $stringRepository;
+        $this->scalarRepository = $scalarRepository;
+        $this->operatorParameterRepository = $operatorParameterRepository;
+        $this->operatorParameterItemRepository = $operatorParameterItemRepository;
+    }
+
 
     public function retrieveNode($nodeId)
     {
@@ -59,19 +89,14 @@ class NodeService
             return $operator;
         } else if ($node instanceof NodeList) {
             $list = array();
-            foreach($node as $item){
-                $operatorItem = new OperatorParameterItem();
-                $s = $this->traverse($item, $parent);
-                if ($s instanceof Operator){
-                    $operatorItem->setOperator($s);
-                } else if ($s instanceof Scalar){
-                    $operatorItem->setScalar($s);
-                }
-                $list[] = $operatorItem;
+            foreach($node as $order=>$item){
+                $value = $this->traverse($item, $parent);
+                $list[] = $this->createOperatorParameterItem(null, $value, $order);
             }
             return $list;
         } else {
             $scalar = new Scalar($node);
+            $scalar->setValue($node);
             return $scalar;
         }
     }
@@ -79,12 +104,13 @@ class NodeService
 
     /**
      * @param $name
+     * @param \AT\CoreBundle\Entity\Operator|null $parent
      * @return Operator
      */
     private function createOperator($name, Operator $parent = null)
     {
         $operator = new Operator();
-        $nameEntity = null;//$this->operatorNameRepository->findBy(array('name' => $name));
+        $nameEntity = $this->operatorNameRepository->findOneBy(array('name' => $name));
         if(empty($nameEntity)){
             $nameEntity = $this->createOperatorName($name);
         }
@@ -93,8 +119,10 @@ class NodeService
         if($parent){
             $operator->setParent($parent);
             $operator->setAncestors("{$parent->getAncestors()}{$parent->getId()}.");
+        } else {
+            $operator->setAncestors("");
         }
-
+        $this->operatorRepository->store($operator, true);
         return $operator;
     }
 
@@ -104,7 +132,7 @@ class NodeService
      * @param int $order
      * @return OperatorParameterItem
      */
-    private function createOperatorParameterItem($operatorParameter, $value, $order = 0)
+    private function createOperatorParameterItem($operatorParameter, $value, $order, $flush = false)
     {
         $operatorParameterItem = new OperatorParameterItem();
         if ($value instanceof Operator){
@@ -114,7 +142,8 @@ class NodeService
         }
 
         $operatorParameterItem->setOperatorParameter($operatorParameter);
-        $operatorParameterItem->setOrder($order);
+        $operatorParameterItem->setPosition($order);
+        $this->operatorParameterItemRepository->store($operatorParameterItem, $flush);
         return $operatorParameterItem;
     }
 
@@ -123,18 +152,25 @@ class NodeService
         $param = new OperatorParameter();
         $param->setOperator($operator);
         $param->setName($attrName);
+        $this->operatorParameterRepository->store($param, true);
+
         if(is_array($attrValue)){
+            foreach($attrValue as $item){
+                $item->setOperatorParameter($param);
+            }
             $param->setItems($attrValue);
         } else if($attrValue instanceof Operator){
+            $item = $this->createOperatorParameterItem($param, $attrValue, 0, true);
+            $item->setOperatorParameter($param);
             $param->setItems(array(
-                $this->createOperatorParameterItem($param, $attrValue)
+                $item
             ));
         } else {
-            $param->setString(
-                $this->createString($attrValue)
+            $param->setScalar(
+                $attrValue
             );
         }
-
+        $this->operatorParameterRepository->store($param, true);
         return $param;
     }
 
@@ -142,18 +178,19 @@ class NodeService
     {
         $nameEntity = new OperatorName();
         $nameEntity->setName($name);
-        //$this->operatorNameRepository->store($nameEntity, true);
+        $this->operatorNameRepository->store($nameEntity, true);
         return $nameEntity;
     }
 
     /**
      * @param $attrValue
+     * @param bool $andFlush
      * @return \AT\CoreBundle\Entity\String
      */
-    private function createString($attrValue)
+    private function createString($attrValue, $andFlush = false)
     {
         $string = new String($attrValue);
-        //$this->stringRepository->store($string, true);
+        $this->stringRepository->store($string, $andFlush);
         return $string;
     }
 }

@@ -38,11 +38,16 @@ class Scalar
     protected $value;
 
     /**
-     * @ORM\ManyToOne(targetEntity="AT\CoreBundle\Entity\ScalarType", cascade={"persist"}, fetch="EAGER")
-     * @ORM\JoinColumn(name="type_id", referencedColumnName="id", nullable=false)
+     * @ORM\ManyToOne(targetEntity="AT\CoreBundle\Entity\ScalarType", cascade={"persist", "remove"}, fetch="EAGER")
+     * @ORM\JoinColumn(name="type_id", referencedColumnName="id", nullable=true)
      * @var ScalarType
      */
     protected $type;
+
+    public function __construct($value)
+    {
+        $this->value = $value;
+    }
 
 
     /**

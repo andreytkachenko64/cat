@@ -34,14 +34,14 @@ class Operator
 
     /**
      * @ORM\ManyToOne(targetEntity="AT\CoreBundle\Entity\File", cascade={"persist"}, fetch="EAGER")
-     * @ORM\JoinColumn(name="file_id", referencedColumnName="id", nullable=false)
+     * @ORM\JoinColumn(name="file_id", referencedColumnName="id", nullable=true)
      * @var File
      */
     protected $file;
 
 
     /**
-     * @ORM\ManyToOne(targetEntity="AT\CoreBundle\Entity\Operator", cascade={"persist"}, fetch="EAGER")
+     * @ORM\ManyToOne(targetEntity="AT\CoreBundle\Entity\Operator", cascade={"persist", "remove"}, fetch="EAGER")
      * @ORM\JoinColumn(name="parent_id", referencedColumnName="id")
      * @var Operator
      */
@@ -65,16 +65,16 @@ class Operator
      * @ORM\Column(type="integer", nullable=false)
      * @var int
      */
-    protected $begin;
+    protected $begin = 0;
 
     /**
      * @ORM\Column(type="integer", nullable=false)
      * @var int
      */
-    protected $end;
+    protected $end = 0;
 
     /**
-     * @ORM\OneToMany(targetEntity="OperatorParameter", mappedBy="operator", cascade={"persist", "remove", "merge"})
+     * @ORM\OneToMany(targetEntity="OperatorParameter", mappedBy="operator", cascade={"persist", "remove"})
      * @var ArrayCollection|OperatorParameter[]
      */
     public $parameters;

@@ -33,7 +33,7 @@ class OperatorParameter
     protected $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="AT\CoreBundle\Entity\Operator", cascade={"persist"}, fetch="EAGER")
+     * @ORM\ManyToOne(targetEntity="AT\CoreBundle\Entity\Operator", fetch="EAGER")
      * @ORM\JoinColumn(name="operator_id", referencedColumnName="id")
      * @var Operator
      */
@@ -46,17 +46,17 @@ class OperatorParameter
     protected $name;
 
     /**
-     * @ORM\OneToMany(targetEntity="AT\CoreBundle\Entity\OperatorParameterItem", mappedBy="operatorParameter", cascade={"persist", "remove", "merge"})
+     * @ORM\OneToMany(targetEntity="AT\CoreBundle\Entity\OperatorParameterItem", cascade={"persist", "remove"}, mappedBy="operatorParameter")
      * @var OperatorParameterItem[]
      */
     protected $items;
 
     /**
-     * @ORM\ManyToOne(targetEntity="AT\CoreBundle\Entity\String", cascade={"persist"}, fetch="EAGER")
-     * @ORM\JoinColumn(name="string_id", referencedColumnName="id")
-     * @var String
+     * @ORM\ManyToOne(targetEntity="AT\CoreBundle\Entity\Scalar", cascade={"persist", "remove"}, fetch="EAGER")
+     * @ORM\JoinColumn(name="scalar_id", referencedColumnName="id", nullable=true)
+     * @var Scalar
      */
-    protected $string;
+    protected $scalar;
 
     public function __construct()
     {
@@ -128,19 +128,19 @@ class OperatorParameter
     }
 
     /**
-     * @param \AT\CoreBundle\Entity\String $string
+     * @param \AT\CoreBundle\Entity\Scalar $scalar
      */
-    public function setString(String $string)
+    public function setScalar(Scalar $scalar = null)
     {
-        $this->string = $string;
+        $this->scalar = $scalar;
     }
 
     /**
-     * @return \AT\CoreBundle\Entity\String
+     * @return \AT\CoreBundle\Entity\Scalar
      */
-    public function getString()
+    public function getScalar()
     {
-        return $this->string;
+        return $this->scalar;
     }
 
 }

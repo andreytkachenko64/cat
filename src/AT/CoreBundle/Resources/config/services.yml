@@ -12,4 +12,10 @@ services:
         arguments: []
     at_core.service.node_service:
         class: %at_core.service.node_service.class%
-        arguments: []
+        arguments:
+            - @at_core.repository.operator_repository
+            - @at_core.repository.operator_name_repository
+            - @at_core.repository.operator_parameter_repository
+            - @at_core.repository.operator_parameter_item_repository
+            - @at_core.repository.string_repository
+            - @at_core.repository.scalar_repository

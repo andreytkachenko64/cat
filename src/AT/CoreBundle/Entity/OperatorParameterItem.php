@@ -32,21 +32,21 @@ class OperatorParameterItem
     protected $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="AT\CoreBundle\Entity\OperatorParameter", cascade={"persist"}, fetch="EAGER")
+     * @ORM\ManyToOne(targetEntity="AT\CoreBundle\Entity\OperatorParameter", cascade={"persist", "remove"}, fetch="EAGER")
      * @ORM\JoinColumn(name="operator_param_id", referencedColumnName="id")
      * @var OperatorParameter
      */
     protected $operatorParameter;
 
     /**
-     * @ORM\ManyToOne(targetEntity="AT\CoreBundle\Entity\Operator", cascade={"persist"}, fetch="EAGER")
+     * @ORM\ManyToOne(targetEntity="AT\CoreBundle\Entity\Operator", cascade={"persist", "remove"}, fetch="EAGER")
      * @ORM\JoinColumn(name="operator_id", referencedColumnName="id", nullable=true)
      * @var Operator
      */
     protected $operator;
 
     /**
-     * @ORM\ManyToOne(targetEntity="AT\CoreBundle\Entity\Scalar", cascade={"persist"}, fetch="EAGER")
+     * @ORM\ManyToOne(targetEntity="AT\CoreBundle\Entity\Scalar", fetch="EAGER", cascade={"persist", "remove"})
      * @ORM\JoinColumn(name="scalar_id", referencedColumnName="id", nullable=true)
      * @var Scalar
      */
@@ -56,7 +56,7 @@ class OperatorParameterItem
      * @ORM\Column(type="integer")
      * @var int
      */
-    protected $order;
+    protected $position;
 
     /**
      * @param int $id
@@ -125,17 +125,17 @@ class OperatorParameterItem
     /**
      * @param int $order
      */
-    public function setOrder($order)
+    public function setPosition($order)
     {
-        $this->order = $order;
+        $this->position = $order;
     }
 
     /**
      * @return int
      */
-    public function getOrder()
+    public function getPosition()
     {
-        return $this->order;
+        return $this->position;
     }
 
 }

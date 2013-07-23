@@ -1,0 +1,36 @@
+services:
+    at_core.repository.operator_repository:
+        class: AT\CoreBundle\Entity\Repository\OperatorRepository
+        arguments: [AT\CoreBundle\Entity\Operator]
+        factory_service: doctrine.orm.entity_manager
+        factory_method: getRepository
+
+    at_core.repository.operator_name_repository:
+        class: AT\CoreBundle\Entity\Repository\OperatorNameRepository
+        arguments: [AT\CoreBundle\Entity\OperatorName]
+        factory_service: doctrine.orm.entity_manager
+        factory_method: getRepository
+
+    at_core.repository.operator_parameter_repository:
+        class: AT\CoreBundle\Entity\Repository\OperatorParameterRepository
+        arguments: [AT\CoreBundle\Entity\OperatorParameter]
+        factory_service: doctrine.orm.entity_manager
+        factory_method: getRepository
+
+    at_core.repository.operator_parameter_item_repository:
+        class: AT\CoreBundle\Entity\Repository\OperatorParameterItemRepository
+        arguments: [AT\CoreBundle\Entity\OperatorParameterItem]
+        factory_service: doctrine.orm.entity_manager
+        factory_method: getRepository
+
+    at_core.repository.scalar_repository:
+        class: AT\CoreBundle\Entity\Repository\ScalarRepository
+        arguments: [AT\CoreBundle\Entity\Scalar]
+        factory_service: doctrine.orm.entity_manager
+        factory_method: getRepository
+
+    at_core.repository.string_repository:
+        class: AT\CoreBundle\Entity\Repository\StringRepository
+        arguments: [AT\CoreBundle\Entity\String]
+        factory_service: doctrine.orm.entity_manager
+        factory_method: getRepository
